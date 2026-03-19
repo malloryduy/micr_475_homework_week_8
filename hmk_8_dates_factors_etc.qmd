@@ -36,6 +36,12 @@ blue_eyes
 red_eyes <- starwars |>
   filter(str_detect(eye_color, "red"))
 red_eyes
+
+# Find out which character has red and blue eyes
+red_and_blue_eyes <- starwars |> filter(str_detect( eye_color, "blue") & str_detect(eye_color, "red"))
+view(red_and_blue_eyes)
+
+#R4-P17 has blue and red eyes
 ```
 
 ## Question 2 — American Unemployment Over Time
@@ -53,21 +59,29 @@ Now use lubridate to plot only the unemployment data from Jan 1st 2008 to Jan 1s
 
 ```{r}
 # your code here
+economics_2008 <- economics |>
+  filter(date > ymd("2008-01-01") & date < ymd("2009-01-01"))
+
+ggplot(economics_2008, aes(x = date, y = unemploy)) +
+  geom_line()
 ```
 
 What do you notice about the format of the date variable on the x axis of this plot vs the plot over the entire time window. What do you think is happening here?
 
-**Your answer:**
+**Your answer: The x-axis of the plot only showing the year 2008-2009 is by month. The x-axis for the plot over the entire time window is by every decade and has less frequency labels. In the 2008-2009 plot, the time is shorter so it has been adjusted to be more specific. I think that ggplot automatically scales the date on the axes based on the range of the dates given.**
 
 Now use mutate to calculate a new variable - the monthly unemployment rate as `unemploy / pop * 100`. Make a plot over the whole time period as in part 1 of this question.
 
 ```{r}
 # your code here
+monthly_unemply_rate <- economics |> mutate(unemployment_rate = unemploy / pop * 100)
+
+ggplot(monthly_unemply_rate, aes(x =  date, y = unemployment_rate)) + geom_line() + labs( title = "Monthly Unemployment Rate Over Time")
 ```
 
 Do you draw different conclusions now about how unemployment has changed over these 40 years? what explains the difference?
 
-**your answer:**
+**your answer: I do draw different conclusion. In the original graph, it appeared that unemployment had been increasing over the 40 years. When we switched to unemployment rate you can see that the overall trend is flatter. The increase is the original plot is because the population was increasing. Although the raw number of people unemployed increased, that is simply just because there are more people in the work force, it does not mean that the actual rate increased.**
 
 ## Question 3 — Flight Status and the Value of Factors
 
@@ -95,12 +109,19 @@ ggplot(flight_status, aes(x = status)) +
   geom_bar()
 ```
 
-**your answer:**
+**your answer: The ordering of the bars is not meaningful, it is just in alphabetical order.**
 
 **(b)** Convert `status` to a factor with levels in a natural severity order: `"very early"`, `"early"`, `"on time"`, `"late"`, `"very late"`, `"cancelled"`. Save it back into `flight_status` and recreate the bar chart. How does the chart change?
 
 ```{r}
-# your code here
+flight_status <- flight_status |>
+  mutate(
+    status = factor(
+      status,
+      levels = c("very early", "early", "on time", "late", "very late", "cancelled")))
+
+ggplot(flight_status, aes(x = status)) +
+  geom_bar() 
 ```
 
-**your answer:**
+**your answer: The x-axis changes from alphabetic order to natural severity order and is easier to read. It logically makes sense because the first graph is very early, then moves to early, and so on.**
